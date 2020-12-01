@@ -54,6 +54,55 @@ TimeoutInterval = EstimatedRTT + 4*DevRTT
 
 
 
+```c
+while (true){
+    
+    switch (事件):
+    
+    case 从上层接收应用数据:
+    {
+        生成具有nextSeqnum的报文段;
+        if (定时器没有运行){
+            启动定时器;
+        }
+        向网络层传递报文段
+        nextSqenum=nextSeqnum + len(data);
+        break;
+    }
+    
+    case 超时:
+    {
+        重传具有最小的序号的未ack报文;
+        启动定时器;
+        break;
+    }
+    
+    // 快速重传
+    // 一个每一个base都对应着当前已经发送，没有ack的分组的定时器
+    case 收到ack，序号值为y:
+    {
+        if (y>sendBase){
+            sendBase=y;
+        }
+        if (当前窗口无任何应答报文段){
+            启动定时器;
+        }else{
+            对y的报文的冗余ack加一;
+            if (y的报文的冗余ack==3){
+                重新发送y对应的报文;
+            }
+        }
+        break;
+    }
+    
+    
+}
+```
+
+
+
+
+
 
 
 ### 流量控制
